@@ -122,14 +122,14 @@ open class TokenField: UIView, UITextFieldDelegate, BackspaceTextFieldDelegate {
   }
 
   /// Customized attributes for tokens in the normal state, e.g. `NSFontAttributeName` and `NSForegroundColorAttributeName`.
-  public var normalTokenAttributes: [NSAttributedStringKey: NSObject]? {
+    public var normalTokenAttributes: [NSAttributedString.Key: NSObject]? {
     didSet {
       tokens.forEach { $0.normalTextAttributes = normalTokenAttributes ?? [:] }
     }
   }
 
   /// Customized attributes for tokens in the highlighted state.
-  public var highlightedTokenAttributes: [NSAttributedStringKey: NSObject]? {
+    public var highlightedTokenAttributes: [NSAttributedString.Key: NSObject]? {
     didSet {
       tokens.forEach { $0.highlightedTextAttributes = normalTokenAttributes ?? [:] }
     }
@@ -154,15 +154,15 @@ open class TokenField: UIView, UITextFieldDelegate, BackspaceTextFieldDelegate {
   }
 
   /// The corner radius of token field in the interface builder. Same as layer.cornerRadius.
-  @IBInspectable var cornerRadius: CGFloat {
-    get {
-      return layer.cornerRadius
-    }
-    set {
-      layer.cornerRadius = newValue
-      layer.masksToBounds = newValue > 0
-    }
-  }
+//  @IBInspectable var cornerRadius: CGFloat {
+//    get {
+//      return layer.cornerRadius
+//    }
+//    set {
+//      layer.cornerRadius = newValue
+//      layer.masksToBounds = newValue > 0
+//    }
+//  }
 
   // MARK: - Private Properties
 

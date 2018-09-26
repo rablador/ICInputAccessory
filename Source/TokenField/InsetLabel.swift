@@ -34,12 +34,12 @@ internal class InsetLabel: UILabel {
   }
 
   var contentEdgeInsets = UIEdgeInsets.zero
-  var cornerRadius = CornerRadius.constant(0)
+  var _cornerRadius = CornerRadius.constant(0)
 
   convenience init(contentEdgeInsets: UIEdgeInsets, cornerRadius: CornerRadius = .constant(0)) {
     self.init(frame: CGRect.zero)
     self.contentEdgeInsets = contentEdgeInsets
-    self.cornerRadius = cornerRadius
+    self._cornerRadius = cornerRadius
 
     switch cornerRadius {
     case let .constant(radius) where radius > 0:
@@ -66,7 +66,7 @@ internal class InsetLabel: UILabel {
 
   override func layoutSubviews() {
     super.layoutSubviews()
-    if case .dynamic = cornerRadius {
+    if case .dynamic = _cornerRadius {
       layer.cornerRadius = frame.height / 2
     }
   }
