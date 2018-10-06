@@ -115,7 +115,11 @@ internal class Token: UIView {
     }
     // Avoid overlapped translucent background colors
     attributes[.backgroundColor] = nil
-    textLabel.attributedText = NSAttributedString(string: text, attributes: attributes)
+
+    let text = NSMutableAttributedString(attributedString: self.text.textWithTokens(fontSize: textLabel.font.pointSize) ?? NSAttributedString(string: ""))
+    text.addAttributes(attributes, range: NSMakeRange(0, text.length))
+
+    textLabel.attributedText = text
 
     delimiterLabel.textColor = normalTextAttributes[.foregroundColor] as? UIColor
     delimiterLabel.font = normalTextAttributes[.font] as? UIFont
