@@ -24,6 +24,8 @@
 //  SOFTWARE.
 //
 
+// Modified by Jon Petersson.
+
 import UIKit
 
 /// The protocol defines the messages sent to a delegate. All the methods are optional.
@@ -44,6 +46,8 @@ import UIKit
   @objc optional func tokenField(_ tokenField: TokenField, didDeleteText text: String, atIndex index: Int)
   /// Asks the delegate for the subsequent delimiter string for a completed text in the token field.
   @objc optional func tokenField(_ tokenField: TokenField, subsequentDelimiterForCompletedText text: String) -> String
+
+  @objc optional func tokenFieldWillClear(_ tokenField: TokenField)
 }
 
 
@@ -76,6 +80,9 @@ open class TokenField: UIView, UITextFieldDelegate, BackspaceTextFieldDelegate {
       }
     }
   }
+
+  public var borderedTokens: Bool = false
+  private var tokenHeight: CGFloat = 30
 
   /// The text field that handles text inputs.
   /// Do not change textField's delegate, which is required to be handled by `TokenField`.
@@ -325,6 +332,11 @@ open class TokenField: UIView, UITextFieldDelegate, BackspaceTextFieldDelegate {
     return true
   }
 
+  public func textFieldShouldClear(_ textField: UITextField) -> Bool {
+    delegate?.tokenFieldWillClear?(self)
+    return true
+  }
+
   // MARK: - BackspaceTextFieldDelegate
 
   @nonobjc func textFieldShouldDelete(_ textField: BackspaceTextField) -> Bool {
@@ -383,9 +395,9 @@ open class TokenField: UIView, UITextFieldDelegate, BackspaceTextFieldDelegate {
 
   private func customizedToken(with text: String) -> Token {
     if let string = delegate?.tokenField?(self, subsequentDelimiterForCompletedText: text) {
-      return Token(text: text, delimiter: string, normalAttributes: normalTokenAttributes, highlightedAttributes: highlightedTokenAttributes)
+        return Token(text: text, bordered: borderedTokens, height: tokenHeight, delimiter: string, normalAttributes: normalTokenAttributes, highlightedAttributes: highlightedTokenAttributes)
     } else {
-      return Token(text: text, normalAttributes: normalTokenAttributes, highlightedAttributes: highlightedTokenAttributes)
+      return Token(text: text, bordered: borderedTokens, height: tokenHeight, normalAttributes: normalTokenAttributes, highlightedAttributes: highlightedTokenAttributes)
     }
   }
 
@@ -404,7 +416,7 @@ open class TokenField: UIView, UITextFieldDelegate, BackspaceTextFieldDelegate {
 
   private func setUpSubviews() {
     if frame.equalTo(CGRect.zero) {
-      frame = CGRect(x: 0, y: 7, width: UIScreen.main.bounds.width, height: 30)
+      frame = CGRect(x: 0, y: 7, width: UIScreen.main.bounds.width, height: tokenHeight)
     }
 
     addSubview(scrollView)
@@ -429,7 +441,7 @@ open class TokenField: UIView, UITextFieldDelegate, BackspaceTextFieldDelegate {
     for token in tokens {
       let frame = CGRect(
         x: offset,
-        y: (scrollView.frame.height - token.frame.height) / 2,
+        y: ((scrollView.frame.height - token.frame.height) / 2) - 1,
         width: token.frame.width,
         height: token.frame.height
       )

@@ -24,6 +24,8 @@
 //  SOFTWARE.
 //
 
+// Modified by Jon Petersson.
+
 import UIKit
 
 internal class Token: UIView {
@@ -31,7 +33,8 @@ internal class Token: UIView {
   var text = "" {
     didSet {
       updateTextLabel()
-        frame = CGRect(origin: CGPoint.zero, size: systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))
+      frame = CGRect(origin: CGPoint.zero, size: systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))
+      if let height = self.tokenHeight { frame.size.height = height }
     }
   }
 
@@ -41,7 +44,7 @@ internal class Token: UIView {
     }
   }
 
-    var normalTextAttributes: [NSAttributedString.Key: NSObject] = [
+  var normalTextAttributes: [NSAttributedString.Key: NSObject] = [
     .foregroundColor: UIColor(red: 0.14, green: 0.38, blue: 0.95, alpha: 1),
     .backgroundColor: UIColor.clear
   ] {
@@ -78,6 +81,9 @@ internal class Token: UIView {
     return _label
   }()
 
+  private var bordered = false
+  private var tokenHeight: CGFloat? = nil
+
   // MARK: - Initialization
 
   override init(frame: CGRect) {
@@ -92,6 +98,8 @@ internal class Token: UIView {
 
   convenience init(
     text: String,
+    bordered: Bool = false,
+    height: CGFloat? = nil,
     delimiter: String = ",",
     normalAttributes: [NSAttributedString.Key: NSObject]? = nil,
     highlightedAttributes: [NSAttributedString.Key: NSObject]? = nil
@@ -99,6 +107,8 @@ internal class Token: UIView {
     self.init()
     if let attributes = normalAttributes { normalTextAttributes = attributes }
     if let attributes = highlightedAttributes { highlightedTextAttributes = attributes }
+    self.bordered = bordered
+    self.tokenHeight = height
     delimiterLabel.text = delimiter
     ({
       // Workaround to trigger didSet inside the initializer
@@ -120,6 +130,12 @@ internal class Token: UIView {
     text.addAttributes(attributes, range: NSMakeRange(0, text.length))
 
     textLabel.attributedText = text
+
+    if bordered {
+        textLabel.borderColor = textLabel.textColor
+        textLabel.backgroundColor = .clear
+        textLabel.borderWidth = 1
+    }
 
     delimiterLabel.textColor = normalTextAttributes[.foregroundColor] as? UIColor
     delimiterLabel.font = normalTextAttributes[.font] as? UIFont
